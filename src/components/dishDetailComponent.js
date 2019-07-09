@@ -1,9 +1,8 @@
 import React , {Component} from 'react' ;
-import { Card, CardImg, CardImgOverlay, CardText, CardBody,
-    CardTitle ,Breadcrumb, BreadcrumbItem , Button , Modal , ModalHeader, ModalBody , Label , Col , Row} from 'reactstrap';
+import { Card, CardImg,  CardText, CardBody,
+    CardTitle ,Breadcrumb, BreadcrumbItem , Button , Modal , ModalHeader, ModalBody , Label , Row} from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { Control ,Errors, LocalForm  } from 'react-redux-form';
-
+import { Control , LocalForm , Errors } from 'react-redux-form';
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
@@ -42,10 +41,10 @@ render () {
                        Comment
                     </ModalHeader>
                     <ModalBody>
-                        <LocalForm onSubmit ={this.handleSubmit}>
+                        <LocalForm onSubmit ={(values) => this.handleSubmit(values)}>
                             <Row className = "form-group">
                                 <Label htmlFor = "rating" > Rating </Label>
-                                <Control.select model =".rating " name="rating" id="rating" className ="form-control">
+                                <Control.select  model =".rating " name="rating" id="rating" className ="form-control">
                                 <option>1</option>
                                         <option>2</option>
                                         <option>3</option>   
@@ -55,8 +54,23 @@ render () {
                             </Row>
                             <Row className = "form-group">
                                 <Label htmlFor = "yourname" >Your name</Label>
-                                <Control.text model = ".yourname" name="yourname" id="yourname" className ="form-control" >
-                            </Control.text>
+                                <Control.text model = ".yourname" name="yourname" id="yourname" className ="form-control" 
+                                validators = {{
+                                  required , minLength : minLength(3) , maxLength : maxLength(15)
+                                }}
+                               />
+                               <Errors
+                               className = "text-danger"
+                               model = ".yourname"
+                               show ="touched"
+                               messages = {{
+                                   required : 'Required' , 
+                                   minLength : 'Min length should be 3' , 
+                                   maxLength : 'max length should be 15'
+                               }}
+                               
+                               />
+                            
                             </Row>
                             <Row className = "form-group" >
                                 <Label htmlFor = "textarea"> Comment</Label>
@@ -135,7 +149,6 @@ const DishDetail = (props) => {
         </Breadcrumb>
         <div className="col-12">
             <h3>{props.dish.name}</h3>
-            <hr />
         </div>                
     </div>
     <div className="row">
