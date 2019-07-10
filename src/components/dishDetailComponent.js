@@ -26,8 +26,10 @@ class CommentForm extends Component
   }
   handleSubmit(values) 
   {
-    console.log("Current state is: " + JSON.stringify(values));
-    alert("Current state is: " + JSON.stringify(values));        
+    this.toggleModal();
+    this.props.addComment(this.props.dishId , values.rating , values.author , values.comment);
+
+    
   }
 render () {
   return (
@@ -53,15 +55,15 @@ render () {
                                 </Control.select>
                             </Row>
                             <Row className = "form-group">
-                                <Label htmlFor = "yourname" >Your name</Label>
-                                <Control.text model = ".yourname" name="yourname" id="yourname" className ="form-control" 
+                                <Label htmlFor = "author" >Your name</Label>
+                                <Control.text model = ".author" name="author" id="author" className ="form-control" 
                                 validators = {{
                                   required , minLength : minLength(3) , maxLength : maxLength(15)
                                 }}
                                />
                                <Errors
                                className = "text-danger"
-                               model = ".yourname"
+                               model = ".author"
                                show ="touched"
                                messages = {{
                                    required : 'Required' , 
@@ -73,8 +75,8 @@ render () {
                             
                             </Row>
                             <Row className = "form-group" >
-                                <Label htmlFor = "textarea"> Comment</Label>
-                                <Control.textarea model=".textarea" name="textarea" rows ="6" className ="form-control"></Control.textarea>
+                                <Label htmlFor = "comment"> Comment</Label>
+                                <Control.textarea model=".comment" name="comment" rows ="6" className ="form-control"></Control.textarea>
                              </Row>
                             <Button type="submit" name="submit" className ="bg-primary" >Submit</Button>
                         </LocalForm>
@@ -88,6 +90,8 @@ render () {
 
 
   function RenderDish({dish}) {
+    console.log("dish " ,dish)
+    console.log("dishid " ,dish.id)
   if(dish != null) {
       return(
         <div className="container">
@@ -108,9 +112,10 @@ render () {
     }  
   }
 
-  function RenderComment({comment}) {
-    if(comment != null){
-    const newDish = comment.map((comment) => {
+  function RenderComment({comments  , addComment , dishId}) {
+    console.log("comment " , comments)
+    if(comments != null){
+    const newDish = comments.map((comment) => {
       return (
         <div className="list-unstyled">
           <li key={comment.id}>
@@ -126,7 +131,7 @@ render () {
         <div className="list-unstyled">
           <h4>Comments</h4>
           {newDish}
-         <CommentForm />
+         <CommentForm addComment={addComment} dishId = {dishId}/>
         </div>
     );
   }
@@ -145,18 +150,19 @@ const DishDetail = (props) => {
         <Breadcrumb>
 
             <BreadcrumbItem><Link to="/menu">Menu</Link></BreadcrumbItem>
-            <BreadcrumbItem active>{props.dish.name}</BreadcrumbItem>
+            <BreadcrumbItem active>{props.dish[0].name}</BreadcrumbItem>
         </Breadcrumb>
         <div className="col-12">
-            <h3>{props.dish.name}</h3>
+            <h3>{props.dish[0].name}</h3>
         </div>                
     </div>
     <div className="row">
         <div className="col-12 col-md-5 m-1">
-            <RenderDish dish={props.dish} />
+            <RenderDish dish={props.dish[0]} />
         </div>
         <div className="col-12 col-md-5 m-1">
-            <RenderComment comment={props.comment} />
+        
+            <RenderComment comments={props.comments} addComment = {props.addComment} dishId = {props.dish[0].id} />
        
         </div>
     </div>
